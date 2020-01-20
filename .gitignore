@@ -1,0 +1,6 @@
+docker_shell/__pycache__
+.vscode
+build
+dist
+*.egg-info
+*.pyc
