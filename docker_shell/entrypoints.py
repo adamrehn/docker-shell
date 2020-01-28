@@ -41,6 +41,7 @@ def main(shell=None):
 	parser.add_argument('shell', help='The shell to be launched inside the container (e.g. bash, sh, zsh, cmd, powershell, etc.)')
 	parser.add_argument('image', help='The fully-qualified tag for the container image to use')
 	parser.add_argument('--no-gpu', action='store_true', help="Don't enable NVIDIA GPU support even if the container image and host system both support it")
+	parser.add_argument('--verbose', action='store_true', help="Enable verbose output")
 	
 	# If a shell was specified via a specific alias, inject it into our argument list
 	if shell is not None:
@@ -66,7 +67,7 @@ def main(shell=None):
 			subprocess.run(['docker', 'pull', args.image], check=True)
 		
 		# Start an interactive container and launch the requested shell
-		shell.launch()
+		shell.launch(verbose=args.verbose)
 		
 	except Exception as e:
 		print('Error: {}'.format(e), file=sys.stderr)

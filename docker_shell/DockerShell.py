@@ -1,4 +1,4 @@
-import docker, os, platform, shutil, subprocess
+import docker, os, platform, shutil, subprocess, sys
 from packaging import version
 
 class DockerShell(object):
@@ -28,7 +28,7 @@ class DockerShell(object):
 		except:
 			return True
 	
-	def launch(self):
+	def launch(self, verbose=False):
 		'''
 		Starts an interactive container and launches a shell inside of it
 		'''
@@ -60,8 +60,8 @@ class DockerShell(object):
 			elif 'nvidia' in self._docker.info()['Runtimes']:
 				['--runtime', 'nvidia']
 		
-		# Start the container and launch the shell
-		subprocess.run([
+		# Assemble the completed `docker run` command
+		command = [
 			'docker', 'run',
 			'--rm', '-ti',
 			'-v', '{}:{}'.format(os.getcwd(), mount),
@@ -71,4 +71,11 @@ class DockerShell(object):
 			] + self._args + [
 			'--entrypoint', self._shell,
 			self._image
-		])
+		]
+		
+		# If verbose output is enabled, print the `docker run` command prior to executing it
+		if verbose == True:
+			print(command, file=sys.stderr)
+		
+		# Start the container and launch the shell
+		subprocess.run(command)
