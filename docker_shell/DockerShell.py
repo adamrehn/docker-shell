@@ -1,4 +1,4 @@
-import docker, os, platform, shutil, subprocess, sys
+import docker, itertools, os, platform, shutil, subprocess, sys
 from packaging import version
 
 class DockerShell(object):
@@ -39,15 +39,19 @@ class DockerShell(object):
 		# Retrieve the container image details
 		details = self._docker.images.get(self._image).attrs
 		
+		# Determine the platform of both the host system and the container image
+		hostPlatform = 'mac' if platform.system() == 'Darwin' else platform.system().lower()
+		containerPlatform = details['Os']
+		
 		# Extract the list of environment variables set for the container image (if any)
 		environmentPairs = details['Config']['Env'] if details['Config']['Env'] is not None else []
 		environmentKeys = [pair.split('=', 1)[0] if '=' in pair else '' for pair in environmentPairs]
 		
 		# Bind-mount our working directory using an appropriate path for the container platform
-		mount = 'C:\\hostdir' if details['Os'] == 'windows' else '/hostdir'
+		mount = 'C:\\hostdir' if containerPlatform == 'windows' else '/hostdir'
 		
 		# If we're running a Linux container on a Linux host, use host networking mode
-		bothLinux = platform.system() == 'Linux' and details['Os'] == 'linux'
+		bothLinux = hostPlatform == 'linux' and containerPlatform == 'linux'
 		networkArgs = ['--network', 'host'] if bothLinux else []
 		
 		# If we're using a container image with NVIDIA GPU support and the host supports it, enable GPU access
@@ -60,6 +64,14 @@ class DockerShell(object):
 			elif 'nvidia' in self._docker.info()['Runtimes']:
 				['--runtime', 'nvidia']
 		
+		# Apply any bind mounts specified in the image labels, including any mounts specific to the host platform
+		labels = details['Config']['Labels'] if details['Config']['Labels'] is not None else {}
+		bindMounts = self._extractLabels(labels, 'docker-shell.mounts.') + self._extractLabels(labels, 'docker-shell.{}.mounts.'.format(hostPlatform))
+		mountArgs = list(itertools.chain.from_iterable([['-v', mount] for mount in bindMounts]))
+		
+		# Apply any additional arguments specified in the image labels, including any arguments specific to the host platform
+		extraArgs = self._extractLabels(labels, 'docker-shell.args.') + self._extractLabels(labels, 'docker-shell.{}.args.'.format(hostPlatform))
+		
 		# Assemble the completed `docker run` command
 		command = [
 			'docker', 'run',
@@ -68,6 +80,8 @@ class DockerShell(object):
 			'-w', mount,
 			] + networkArgs + [
 			] + gpuArgs + [
+			] + mountArgs + [
+			] + extraArgs + [
 			] + self._args + [
 			'--entrypoint', self._shell,
 			self._image
@@ -79,3 +93,9 @@ class DockerShell(object):
 		
 		# Start the container and launch the shell
 		subprocess.run(command)
+	
+	def _extractLabels(self, labels, prefix, transform=os.path.expandvars):
+		'''
+		Extracts the list of image labels whose keys match the specified prefix, applying the specified transformation to the values
+		'''
+		return [transform(labels[key]) for key in labels if key.startswith(prefix)]

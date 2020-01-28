@@ -27,6 +27,7 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - [Basic usage](#basic-usage)
   - [Passing additional flags to Docker](#passing-additional-flags-to-docker)
   - [Working with alias tags](#working-with-alias-tags)
+  - [Specifying additional options using image labels](#specifying-additional-options-using-image-labels)
 - [Legal](#legal)
 
 
@@ -94,6 +95,41 @@ docker tag mcr.microsoft.com/windows/servercore:ltsc2019 windows:latest
 
 # Run a Windows Command Prompt using the short tag
 dcmd windows
+```
+
+### Specifying additional options using image labels
+
+If there are bind mounts or command-line flags that you always use when running a particular image then you can specify these using image labels in your Dockerfile and `docker-shell` will apply them automatically:
+
+```dockerfile
+FROM my-base-image
+
+# The directory specified by the environment variable `SOMEVAR` will be bind-mounted irrespective of the host platform
+LABEL docker-shell.mounts.1="$SOMEVAR:/data"
+
+# This specific user's Desktop directory will be bind-mounted only when running on Linux hosts
+LABEL docker-shell.linux.mounts.1="/home/user/Desktop:/desktop"
+
+# This specific user's Desktop directory will be bind-mounted only when running on macOS hosts
+LABEL docker-shell.mac.mounts.1="/Users/user/Desktop:/desktop"
+
+# This specific user's Desktop directory will be bind-mounted only when running on Windows hosts
+LABEL docker-shell.windows.mounts.1="C:/Users/User/Desktop:/desktop"
+
+# The command-line flags `-u 1000` will be applied irrespective of the host platform
+LABEL docker-shell.args.1="-u"
+LABEL docker-shell.args.2="1000"
+
+# The command-line flags `--priveleged` will be applied only when running on Linux hosts
+LABEL docker-shell.linux.args.1="--priveleged"
+
+# The command-line flags `-m 1GB` will be applied only when running on macOS hosts
+LABEL docker-shell.mac.args.1="-m"
+LABEL docker-shell.mac.args.2="1GB"
+
+# The command-line flags `-m 2GB` will be applied only when running on Windows hosts
+LABEL docker-shell.windows.args.1="-m"
+LABEL docker-shell.windows.args.2="2GB"
 ```
 
 
