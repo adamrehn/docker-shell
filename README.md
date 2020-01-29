@@ -105,7 +105,7 @@ If there are bind mounts or command-line flags that you always use when running 
 FROM my-base-image
 
 # The directory specified by the environment variable `SOMEVAR` will be bind-mounted irrespective of the host platform
-LABEL docker-shell.mounts.1="$SOMEVAR:/data"
+LABEL docker-shell.mounts.1="\$SOMEVAR:/data"
 
 # This specific user's Desktop directory will be bind-mounted only when running on Linux hosts
 LABEL docker-shell.linux.mounts.1="/home/user/Desktop:/desktop"
