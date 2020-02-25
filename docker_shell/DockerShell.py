@@ -94,8 +94,24 @@ class DockerShell(object):
 		# Start the container and launch the shell
 		subprocess.run(command)
 	
-	def _extractLabels(self, labels, prefix, transform=os.path.expandvars):
+	def _extractLabels(self, labels, prefix):
 		'''
-		Extracts the list of image labels whose keys match the specified prefix, applying the specified transformation to the values
+		Extracts the list of image labels whose keys match the specified prefix, applying our custom path expansion to the values
 		'''
-		return [transform(labels[key]) for key in labels if key.startswith(prefix)]
+		return [self._expandVars(labels[key]) for key in labels if key.startswith(prefix)]
+	
+	def _expandVars(self, p):
+		'''
+		Expands environment variables and user home directories in a path, as well as our supported custom variables
+		'''
+		
+		# Make a copy of the original environment variables and add our custom variables
+		environ = os.environ.copy()
+		os.environ['CWD'] = os.getcwd()
+		
+		# Expand paths and user home directories
+		expanded = os.path.expanduser(os.path.expandvars(p))
+		
+		# Restore the original environment variables and return the expanded path
+		os.environ = environ
+		return expanded

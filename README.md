@@ -107,14 +107,17 @@ FROM my-base-image
 # The directory specified by the environment variable `SOMEVAR` will be bind-mounted irrespective of the host platform
 LABEL docker-shell.mounts.1="\$SOMEVAR:/data"
 
+# The current user's Desktop directory will be bind-mounted irrespective of the host platform
+LABEL docker-shell.mounts.2="~/Desktop:/desktop"
+
 # This specific user's Desktop directory will be bind-mounted only when running on Linux hosts
-LABEL docker-shell.linux.mounts.1="/home/user/Desktop:/desktop"
+LABEL docker-shell.linux.mounts.1="/home/user/Desktop:/user-desktop"
 
 # This specific user's Desktop directory will be bind-mounted only when running on macOS hosts
-LABEL docker-shell.mac.mounts.1="/Users/user/Desktop:/desktop"
+LABEL docker-shell.mac.mounts.1="/Users/user/Desktop:/user-desktop"
 
 # This specific user's Desktop directory will be bind-mounted only when running on Windows hosts
-LABEL docker-shell.windows.mounts.1="C:/Users/User/Desktop:/desktop"
+LABEL docker-shell.windows.mounts.1="C:/Users/User/Desktop:/user-desktop"
 
 # The command-line flags `-u 1000` will be applied irrespective of the host platform
 LABEL docker-shell.args.1="-u"
