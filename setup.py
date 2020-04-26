@@ -30,6 +30,7 @@ setup(
 	python_requires = '>=3.5',
 	install_requires = [
 		'docker>=4.0.0',
+		'packaging>=19.1',
 		'setuptools>=38.6.0',
 		'twine>=1.11.0',
 		'wheel>=0.31.0'
