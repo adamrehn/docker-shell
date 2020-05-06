@@ -1,5 +1,6 @@
 import docker, itertools, os, platform, shutil, subprocess, sys
 from packaging import version
+from .Utility import Utility
 
 class DockerShell(object):
 	
@@ -13,6 +14,9 @@ class DockerShell(object):
 		self._shell = shell
 		self._noGPU = noGPU
 		self._args = args
+		
+		# Cache the host system's IP address so we only ever query it once
+		self._hostIP = Utility.hostSystemIP()
 		
 		# Attempt to connect to the Docker daemon
 		self._docker = docker.from_env()
@@ -108,6 +112,7 @@ class DockerShell(object):
 		# Make a copy of the original environment variables and add our custom variables
 		environ = os.environ.copy()
 		os.environ['CWD'] = os.getcwd()
+		os.environ['HOSTIP'] = self._hostIP
 		
 		# Expand paths and user home directories
 		expanded = os.path.expanduser(os.path.expandvars(p))
