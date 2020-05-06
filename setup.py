@@ -7,7 +7,7 @@ with open(abspath(join(dirname(__file__), 'README.md')), 'rb') as readmeFile:
 
 setup(
 	name='docker-shell',
-	version='0.0.4',
+	version='0.0.5',
 	description='Docker Interactive Shell Runner',
 	long_description=__readme__,
 	long_description_content_type='text/markdown',
