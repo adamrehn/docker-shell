@@ -5,7 +5,7 @@ from .Utility import Utility
 
 class DockerShell(object):
 	
-	def __init__(self, image, shell, noGPU=False, args=[]):
+	def __init__(self, image, shell, noGPU=False, dockerArgs=[], shellArgs=[]):
 		'''
 		Creates a new shell runner and connects to the Docker daemon
 		'''
@@ -14,7 +14,8 @@ class DockerShell(object):
 		self._image = image
 		self._shell = shell
 		self._noGPU = noGPU
-		self._args = args
+		self._dockerArgs = dockerArgs
+		self._shellArgs = shellArgs
 		
 		# Cache the host system's IP address so we only ever query it once
 		self._hostIP = Utility.hostSystemIP()
@@ -94,10 +95,10 @@ class DockerShell(object):
 			] + gpuArgs + [
 			] + mountArgs + [
 			] + extraArgs + [
-			] + self._args + [
+			] + self._dockerArgs + [
 			'--entrypoint', self._shell,
 			self._image
-		]
+		] + self._shellArgs
 		
 		# If verbose output is enabled, print the `docker run` command prior to executing it
 		if verbose == True:

@@ -59,13 +59,20 @@ def main(shell=None):
 		parser.print_help()
 		sys.exit(0)
 	
+	# If additional arguments were supplied to pass to the shell, separate these from our own arguments and any flags to pass to Docker
+	shellArgs = []
+	if '--' in sys.argv:
+		split = sys.argv.index('--')
+		shellArgs = sys.argv[split+1:]
+		sys.argv = sys.argv[:split]
+	
 	# Parse the supplied command-line arguments
-	args, extraArgs = parser.parse_known_args()
+	args, dockerArgs = parser.parse_known_args()
 	
 	try:
 		
 		# Connect to the Docker daemon
-		shell = DockerShell(args.image, args.shell, noGPU=args.no_gpu, args=extraArgs)
+		shell = DockerShell(args.image, args.shell, noGPU=args.no_gpu, dockerArgs=dockerArgs, shellArgs=shellArgs)
 		
 		# Pull the specified container image if it is not already available
 		if shell.requiresPull() == True:
