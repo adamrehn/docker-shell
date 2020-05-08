@@ -80,7 +80,7 @@ def main(shell=None):
 			shell.pull()
 		
 		# Start an interactive container and launch the requested shell
-		shell.launch(verbose=args.verbose)
+		sys.exit(shell.launch(verbose=args.verbose))
 		
 	except Exception as e:
 		print('Error: {}'.format(e), file=sys.stderr)

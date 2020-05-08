@@ -105,7 +105,7 @@ class DockerShell(object):
 			print(command, file=sys.stderr)
 		
 		# Start the container and launch the shell
-		subprocess.run(command)
+		return subprocess.run(command).returncode
 	
 	def _extractLabels(self, labels, prefix):
 		'''
