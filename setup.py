@@ -43,7 +43,8 @@ setup(
 			'dzsh=docker_shell.entrypoints:zsh',
 			'dcmd=docker_shell.entrypoints:cmd',
 			'dps=docker_shell.entrypoints:powershell',
-			'dpowershell=docker_shell.entrypoints:powershell'
+			'dpowershell=docker_shell.entrypoints:powershell',
+			'dpwsh=docker_shell.entrypoints:pwsh'
 		]
 	}
 )

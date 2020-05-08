@@ -31,6 +31,12 @@ def powershell():
 	'''
 	main('powershell')
 
+def pwsh():
+	'''
+	The entrypoint executed by running the `dpwsh` executable
+	'''
+	main('pwsh')
+
 def main(shell=None):
 	'''
 	The entrypoint executed by running the `docker-shell` executable
@@ -64,7 +70,7 @@ def main(shell=None):
 		# Pull the specified container image if it is not already available
 		if shell.requiresPull() == True:
 			print("Unable to find image '{}' locally".format(args.image))
-			subprocess.run(['docker', 'pull', args.image], check=True)
+			shell.pull()
 		
 		# Start an interactive container and launch the requested shell
 		shell.launch(verbose=args.verbose)

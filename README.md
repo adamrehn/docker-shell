@@ -17,7 +17,8 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - `dsh` for the [Bourne shell]()
   - `dzsh` for [Zsh](https://www.zsh.org/)
   - `dcmd` for the Windows Command Prompt
-  - `dps` and `dpowershell` for [PowerShell](https://docs.microsoft.com/en-us/powershell/)
+  - `dps` and `dpowershell` for [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/)
+  - `dpwsh` for [PowerShell Core](https://docs.microsoft.com/en-us/powershell/)
 
 
 ## Contents
@@ -28,6 +29,7 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - [Passing additional flags to Docker](#passing-additional-flags-to-docker)
   - [Working with alias tags](#working-with-alias-tags)
   - [Specifying additional options using image labels](#specifying-additional-options-using-image-labels)
+  - [Automatic Docker daemon selection under Windows 10](#automatic-docker-daemon-selection-under-windows-10])
 - [Legal](#legal)
 
 
@@ -134,6 +136,10 @@ LABEL docker-shell.mac.args.2="1GB"
 LABEL docker-shell.windows.args.1="-m"
 LABEL docker-shell.windows.args.2="2GB"
 ```
+
+### Automatic Docker daemon selection under Windows 10
+
+When running [Docker Desktop](https://www.docker.com/products/docker-desktop) under Windows 10, docker-shell can automatically switch between Windows containers mode and Linux containers mode based on the specified shell. (Windows containers mode is used for `cmd` and `powershell`, whilst Linux containers mode is used for all other shells.) Because this behaviour alters system state and may be considered intrusive, it is disabled by default. To enable automatic daemon selection, set the environment variable `DOCKERSHELL_WINDOWS_AUTO_SELECT` to `1`.
 
 
 ## Legal

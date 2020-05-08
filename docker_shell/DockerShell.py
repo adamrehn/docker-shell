@@ -1,5 +1,6 @@
 import docker, itertools, os, platform, shutil, subprocess, sys
 from packaging import version
+from .DaemonSelection import DaemonSelection
 from .Utility import Utility
 
 class DockerShell(object):
@@ -18,7 +19,8 @@ class DockerShell(object):
 		# Cache the host system's IP address so we only ever query it once
 		self._hostIP = Utility.hostSystemIP()
 		
-		# Attempt to connect to the Docker daemon
+		# Attempt to connect to the most appropriate Docker daemon
+		DaemonSelection.selectDaemon(self._shell, self._image)
 		self._docker = docker.from_env()
 		self._docker.ping()
 	
@@ -31,6 +33,12 @@ class DockerShell(object):
 			return False
 		except:
 			return True
+	
+	def pull(self):
+		'''
+		Pulls our container image
+		'''
+		subprocess.run(['docker', 'pull', self._image], check=True)
 	
 	def launch(self, verbose=False):
 		'''
