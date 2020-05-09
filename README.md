@@ -23,6 +23,7 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
 
 ## Contents
 
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Usage](#usage)
   - [Basic usage](#basic-usage)
@@ -32,6 +33,23 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - [Automatic Docker daemon selection under Windows 10](#automatic-docker-daemon-selection-under-windows-10])
 - [Legal](#legal)
 
+
+## Requirements
+
+- One of Docker's supported operating systems (with the additional minimum requirement of version 1809 or newer for Windows systems):
+  
+  - **Linux:** 64-bit version of one of Docker's [supported Linux distributions](https://docs.docker.com/engine/install/#supported-platforms) (CentOS 7+, Debian 7.7+, Fedora 26+, Ubuntu 14.04+)
+  - **macOS:** macOS 10.10.3 Yosemite or newer running on 2010 or newer model Mac hardware
+  - **Windows 10:** 64-bit Windows 10 Pro/Enterprise/Education version 1809 or newer, or 64-bit Windows 10 Home version 2004 or newer with [WSL2](https://docs.microsoft.com/en-us/windows/wsl/wsl2-index)
+  - **Windows Server:** Windows Server 2019 / Windows Server version 1809 or newer
+
+- An appropriate Docker installation for your operating system:
+  
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop) under Windows 10 or macOS
+  - [Docker Community Edition (CE)](https://docs.docker.com/engine/install/) under Linux
+  - [Docker Enterprise Edition (EE)](https://hub.docker.com/editions/enterprise/docker-ee-server-windows) under Windows Server
+
+- [Python](https://www.python.org/) version 3.5 or newer
 
 ## Installation
 
@@ -139,7 +157,7 @@ LABEL docker-shell.windows.args.2="2GB"
 
 ### Automatic Docker daemon selection under Windows 10
 
-When running [Docker Desktop](https://www.docker.com/products/docker-desktop) under Windows 10, docker-shell can automatically switch between Windows containers mode and Linux containers mode based on the specified shell. (Windows containers mode is used for `cmd` and `powershell`, whilst Linux containers mode is used for all other shells.) Because this behaviour alters system state and may be considered intrusive, it is disabled by default. To enable automatic daemon selection, set the environment variable `DOCKERSHELL_WINDOWS_AUTO_SELECT` to `1`.
+When running Docker Desktop under Windows 10, docker-shell can automatically switch between Windows containers mode and Linux containers mode based on the specified shell. (Windows containers mode is used for `cmd` and `powershell`, whilst Linux containers mode is used for all other shells.) Because this behaviour alters system state and may be considered intrusive, it is disabled by default. To enable automatic daemon selection, set the environment variable `DOCKERSHELL_WINDOWS_AUTO_SELECT` to `1`.
 
 
 ## Legal
