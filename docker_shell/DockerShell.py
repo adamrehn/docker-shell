@@ -1,7 +1,7 @@
 import docker, itertools, os, platform, shutil, subprocess, sys
-from packaging import version
 from .DaemonSelection import DaemonSelection
 from .Utility import Utility
+from packaging import version
 
 class DockerShell(object):
 	
@@ -76,6 +76,22 @@ class DockerShell(object):
 				gpuArgs = ['--gpus', 'all']
 			elif 'nvidia' in self._docker.info()['Runtimes']:
 				['--runtime', 'nvidia']
+		
+		# If we're running a Windows container then select the appropriate isolation mode, preferring process isolation mode over Hyper-V isolation mode when possible
+		if containerPlatform == 'windows':
+			
+			# Retrieve the version string for the underlying host system, avoiding code paths that rely on the `platform_version` attribute, which is designed
+			# to report more accurate values by calling `GetFileVersionInfoW()` on kernel32.dll, but can actually end up reporting older version strings for
+			# Windows releases where the version in kernel32.dll hasn't changed since the previous release, such as Windows 10 version 1909
+			hostVersion = sys.getwindowsversion()
+			hostRelease = (hostVersion.major, hostVersion.minor, hostVersion.build)
+			
+			# Retrieve the version string for the container image, discarding the revision number since only mattered for compatibility prior to Windows Server/10 version 1809
+			containerRelease = version.parse(details['OsVersion']).release[0:3]
+			
+			# Use process isolation mode if the version tuples match, otherwise Hyper-V isolation mode is required
+			isolation = 'process' if containerRelease == hostRelease else 'hyperv'
+			self._dockerArgs.append('--isolation={}'.format(isolation))
 		
 		# Apply any bind mounts specified in the image labels, including any mounts specific to the host platform
 		labels = details['Config']['Labels'] if details['Config']['Labels'] is not None else {}
