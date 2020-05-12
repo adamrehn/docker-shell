@@ -30,6 +30,7 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - [Passing additional flags to Docker](#passing-additional-flags-to-docker)
   - [Working with alias tags](#working-with-alias-tags)
   - [Specifying additional options using image labels](#specifying-additional-options-using-image-labels)
+  - [Special variables available for use in labels](#special-variables-available-for-use-in-labels)
   - [Automatic Docker daemon selection under Windows 10](#automatic-docker-daemon-selection-under-windows-10])
 - [Legal](#legal)
 
@@ -127,8 +128,11 @@ FROM my-base-image
 # The directory specified by the environment variable `SOMEVAR` will be bind-mounted irrespective of the host platform
 LABEL docker-shell.mounts.1="\$SOMEVAR:/data"
 
+# The named volume specified by the special `VOLUME` variable (see below for details) will be bind-mounted irrespective of the host platform
+LABEL docker-shell.mounts.2="\$VOLUME:/project-data"
+
 # The current user's Desktop directory will be bind-mounted irrespective of the host platform
-LABEL docker-shell.mounts.2="~/Desktop:/desktop"
+LABEL docker-shell.mounts.3="~/Desktop:/desktop"
 
 # This specific user's Desktop directory will be bind-mounted only when running on Linux hosts
 LABEL docker-shell.linux.mounts.1="/home/user/Desktop:/user-desktop"
@@ -154,6 +158,14 @@ LABEL docker-shell.mac.args.2="1GB"
 LABEL docker-shell.windows.args.1="-m"
 LABEL docker-shell.windows.args.2="2GB"
 ```
+
+### Special variables available for use in labels
+
+When specifying additional options via image labels, the following special variables are supported:
+
+- `CWD`: resolves to the current working directory on the host system
+- `HOSTIP`: resolves to the IP address of the host system on the local network, or `127.0.0.1` if no network interfaces are available
+- `VOLUME`: resolves to the SHA-256 hash of the absolute path to the current working directory on the host system, suitable for use as a volume name when you want to associate data with a particular project but don't want to store files on the host filesystem for performance or compatibility reasons
 
 ### Automatic Docker daemon selection under Windows 10
 
