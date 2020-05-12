@@ -44,7 +44,7 @@ def main(shell=None):
 	
 	# Our supported command-line arguments
 	parser = argparse.ArgumentParser(prog='docker-shell')
-	parser.add_argument('shell', help='The shell to be launched inside the container (e.g. bash, sh, zsh, cmd, powershell, etc.)')
+	parser.add_argument('shell', help='The shell to be launched inside the container (e.g. bash, sh, zsh, cmd, powershell, pwsh, etc.)')
 	parser.add_argument('image', help='The fully-qualified tag for the container image to use')
 	parser.add_argument('--no-gpu', action='store_true', help="Don't enable NVIDIA GPU support even if the container image and host system both support it")
 	parser.add_argument('--verbose', action='store_true', help="Enable verbose output")
