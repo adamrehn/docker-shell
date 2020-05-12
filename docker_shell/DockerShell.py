@@ -1,4 +1,4 @@
-import docker, itertools, os, platform, shutil, subprocess, sys
+import docker, hashlib, itertools, os, platform, shutil, subprocess, sys
 from .DaemonSelection import DaemonSelection
 from .Utility import Utility
 from packaging import version
@@ -16,6 +16,9 @@ class DockerShell(object):
 		self._noGPU = noGPU
 		self._dockerArgs = dockerArgs
 		self._shellArgs = shellArgs
+		
+		# Store our host filesystem path
+		self._hostDir = os.path.abspath(os.getcwd())
 		
 		# Cache the host system's IP address so we only ever query it once
 		self._hostIP = Utility.hostSystemIP()
@@ -105,7 +108,7 @@ class DockerShell(object):
 		command = [
 			'docker', 'run',
 			'--rm', '-ti',
-			'-v', '{}:{}'.format(os.getcwd(), mount),
+			'-v', '{}:{}'.format(self._hostDir, mount),
 			'-w', mount,
 			] + networkArgs + [
 			] + gpuArgs + [
@@ -136,8 +139,9 @@ class DockerShell(object):
 		
 		# Make a copy of the original environment variables and add our custom variables
 		environ = os.environ.copy()
-		os.environ['CWD'] = os.getcwd()
+		os.environ['CWD'] = self._hostDir
 		os.environ['HOSTIP'] = self._hostIP
+		os.environ['VOLUME'] = hashlib.sha256(os.path.realpath(self._hostDir).encode('utf-8')).hexdigest()
 		
 		# Expand paths and user home directories
 		expanded = os.path.expanduser(os.path.expandvars(p))
