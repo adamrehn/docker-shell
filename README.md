@@ -20,6 +20,8 @@ The `docker-shell` command makes it quick and easy to start an interactive shell
   - `dps` and `dpowershell` for [Windows PowerShell](https://docs.microsoft.com/en-us/powershell/)
   - `dpwsh` for [PowerShell Core](https://docs.microsoft.com/en-us/powershell/)
 
+See the [developer-images](https://github.com/adamrehn/developer-images) repository for examples of container images designed specifically for use with docker-shell.
+
 
 ## Contents
 
