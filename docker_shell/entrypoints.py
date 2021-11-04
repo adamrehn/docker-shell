@@ -1,5 +1,6 @@
 from .DockerShell import DockerShell
-import argparse, subprocess, sys
+from os.path import abspath, join
+import argparse, sys
 
 def bash():
 	'''
@@ -52,6 +53,7 @@ def main(shell=None):
 	parser.add_argument('image', help='The fully-qualified tag for the container image to use')
 	parser.add_argument('--no-gpu', action='store_true', help="Don't enable NVIDIA GPU support even if the container image and host system both support it")
 	parser.add_argument('--verbose', action='store_true', help="Enable verbose output")
+	parser.add_argument('--prefix-paths', default=None, help="Prefix to prepend to any absolute filesystem paths in the shell arguments (Unix paths only)")
 	
 	# If a shell was specified via a specific alias, inject it into our argument list
 	if shell is not None:
@@ -72,6 +74,13 @@ def main(shell=None):
 	
 	# Parse the supplied command-line arguments
 	args, dockerArgs = parser.parse_known_args()
+	
+	# If a prefix was supplied then prepend it to any absolute filesystem paths in the shell arguments
+	if args.prefix_paths is not None:
+		shellArgs = list([
+			join(args.prefix_paths, a[1:]) if a.startswith('/') and abspath(a) == a else a
+			for a in shellArgs
+		])
 	
 	try:
 		
