@@ -104,6 +104,9 @@ class DockerShell(object):
 		# Apply any additional arguments specified in the image labels, including any arguments specific to the host platform
 		extraArgs = self._extractLabels(labels, 'docker-shell.args.') + self._extractLabels(labels, 'docker-shell.{}.args.'.format(hostPlatform))
 		
+		# If no shell was specified then use the default entrypoint from the container image
+		entrypointArgs = ['--entrypoint', self._shell] if len(self._shell) > 0 else []
+		
 		# Assemble the completed `docker run` command
 		command = [
 			'docker', 'run',
@@ -115,9 +118,9 @@ class DockerShell(object):
 			] + mountArgs + [
 			] + extraArgs + [
 			] + self._dockerArgs + [
-			'--entrypoint', self._shell,
-			self._image
-		] + self._shellArgs
+			] + entrypointArgs + [
+			    self._image
+			] + self._shellArgs
 		
 		# If verbose output is enabled, print the `docker run` command prior to executing it
 		if verbose == True:
